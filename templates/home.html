@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrugLens - Medicine Information System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">🔍 DrugLens</a>
+            <div class="navbar-nav ms-auto">
+                {% if session.user_id %}
+                    <a class="nav-link" href="/medicine">Search Medicine</a>
+                    <a class="nav-link" href="/scan">Scan QR/Barcode</a>
+                    <a class="nav-link" href="/history">History</a>
+                    <a class="nav-link" href="/admin">Admin</a>
+                    <a class="nav-link" href="/logout">Logout</a>
+                {% else %}
+                    <a class="nav-link" href="/login">Login</a>
+                    <a class="nav-link" href="/signup">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4">Welcome to DrugLens 💊</h1>
+            <p class="lead">Your AI-powered medicine information system with QR scanning and multi-language support.</p>
+            
+            {% if session.user_id %}
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">🔍 Search Medicine</h5>
+                                <p class="card-text">Search for medicine information by name</p>
+                                <a href="/medicine" class="btn btn-primary">Search Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">📱 QR/Barcode Scan</h5>
+                                <p class="card-text">Scan medicine barcodes for instant information</p>
+                                <a href="/scan" class="btn btn-success">Scan Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">📊 History</h5>
+                                <p class="card-text">View your medicine search history</p>
+                                <a href="/history" class="btn btn-info">View History</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <hr class="my-4">
+                <p>Please login to access all features of DrugLens.</p>
+                <a class="btn btn-primary btn-lg" href="/login" role="button">Login</a>
+                <a class="btn btn-outline-primary btn-lg ml-2" href="/signup" role="button">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
