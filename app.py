@@ -5,14 +5,20 @@ from PIL import Image
 from googletrans import Translator
 import os
 
-# Try to import pyzbar, use fallback if not available
+# ---------------- SAFE PYZXING LOADING ----------------
+PYZXING_AVAILABLE = False
 try:
-    from pyzbar.pyzbar import decode
-    PYZBAR_AVAILABLE = True
-except ImportError:
-    PYZBAR_AVAILABLE = False
+    from pyzxing import BarCodeReader
+    reader = BarCodeReader()
+    PYZXING_AVAILABLE = True
+except Exception as e:
+    print(f"Warning: pyzxing not available. QR/Barcode scanning disabled. Reason: {e}")
+    PYZXING_AVAILABLE = False
+
+    # fallback decode function
     def decode(img):
-        return []  # Return empty list as fallback
+        return []
+
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SESSION_SECRET', 'fallback-secret-key')
@@ -120,36 +126,47 @@ def medicine():
 def scan():
     if 'user_id' not in session:
         return redirect("/login")
-    result=None
-    translated=None
-    error_message=None
-    
-    if request.method=="POST":
-        if not PYZBAR_AVAILABLE:
+    result = None
+    translated = None
+    error_message = None
+    scanned_code = None
+
+    if request.method == "POST":
+        if not PYZXING_AVAILABLE:
             error_message = "QR/Barcode scanning functionality is currently unavailable. System dependencies are being configured."
         else:
-            file=request.files['barcode_image']
-            img=Image.open(file.stream)
-            decoded=decode(img)
-            if decoded:
-                code=decoded[0].data.decode("utf-8")
-                conn=sqlite3.connect("medicines.db")
-                c=conn.cursor()
-                c.execute("SELECT * FROM medicines WHERE barcode=?",(code,))
-                result=c.fetchone()
+            file = request.files['barcode_image']
+            temp_path = os.path.join("static", "temp_barcode.png")
+            file.save(temp_path)
+            abs_temp_path = os.path.abspath(temp_path)
+            abs_temp_path_fwd = abs_temp_path.replace('\\', '/')
+            print(f"[DEBUG] Path sent to pyzxing: {abs_temp_path_fwd}")
+            decoded = reader.decode(abs_temp_path_fwd)
+            if decoded and decoded[0]['parsed']:
+                scanned_code = decoded[0]['parsed']
+                # Convert bytes to string if needed
+                if isinstance(scanned_code, bytes):
+                    scanned_code = scanned_code.decode('utf-8')
+                conn = sqlite3.connect("medicines.db")
+                c = conn.cursor()
+                c.execute("SELECT * FROM medicines WHERE barcode=?", (scanned_code,))
+                result = c.fetchone()
                 if result:
                     c.execute("INSERT INTO history (user_id, medicine_id, search_date) VALUES (?,?,?)",
                               (session['user_id'], result[0], datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                     conn.commit()
-                    translated={
-                        "description":translator.translate(result[3],dest='hi').text,
-                        "dosage":translator.translate(result[4],dest='hi').text,
-                        "side_effects":translator.translate(result[5],dest='hi').text,
-                        "interactions":translator.translate(result[6],dest='hi').text
+                    translated = {
+                        "description": translator.translate(result[3], dest='hi').text,
+                        "dosage": translator.translate(result[4], dest='hi').text,
+                        "side_effects": translator.translate(result[5], dest='hi').text,
+                        "interactions": translator.translate(result[6], dest='hi').text
                     }
                 conn.close()
-    
-    return render_template("scan.html", result=result, translated=translated, error_message=error_message)
+            # Clean up temp file
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+    return render_template("scan.html", result=result, translated=translated, error_message=error_message, scanned_code=scanned_code)
 
 # History
 @app.route("/history")

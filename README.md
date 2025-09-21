@@ -1,58 +1,56 @@
-# DrugLens - Medicine Information System 🏥
 
-A comprehensive Flask-based medicine information system with QR/barcode scanning, multi-language translation, and user management.
+# DrugLens Flask Application
 
-## Features ✨
+DrugLens is a Flask-based web application for scanning medicine QR/barcodes, searching medicines, and managing a medicine database. It supports user authentication, history tracking, and provides medicine information in both English and Hindi (via Google Translate API).
 
-- **User Authentication** - Secure signup/login system with session management
-- **Medicine Search** - Search medicines by name with detailed information
-- **QR/Barcode Scanning** - Upload images to scan medicine barcodes for instant lookup
-- **Multi-Language Translation** - Automatic translation to Hindi using Google Translate
-- **Search History** - Track and view all medicine search history
-- **Admin Panel** - Add new medicines to the database
-- **Responsive Design** - Mobile-friendly interface with Bootstrap styling
 
-## Quick Start 🚀
+## Features
 
-### Prerequisites
+- **User Signup/Login/Logout**: Secure user authentication and session management.
+- **Medicine Search**: Search for medicines by name and view detailed information.
+- **QR/Barcode Scan**: Upload a QR/barcode image to instantly retrieve medicine details.
+- **History**: View your search and scan history.
+- **Admin Panel**: Add new medicines to the database.
+- **Sample Data & QR Codes**: Comes with 10 sample medicines and QR codes for testing.
+- **Multilingual Support**: Medicine details are auto-translated to Hindi.
 
-- Python 3.11 or higher
-- pip or uv package manager
 
-### Installation
+## Setup Instructions
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Rakshitha-k2626/DrugLensFlask.git
-   cd DrugLensFlask
-   ```
+### 1. Clone the Repository
 
-2. **Install dependencies**
-   ```bash
-   # Using uv (recommended)
-   uv sync
-   
-   # Or using pip
-   pip install flask pillow pyzbar googletrans==4.0.0-rc1
-   ```
+```
+git clone <repo-url>
+cd DrugLensFlask
+```
 
-3. **Set up the database**
-   ```bash
-   python seed_database.py
-   ```
+### 2. Install Dependencies
 
-4. **Set environment variable (recommended)**
-   ```bash
-   export SESSION_SECRET="your-secret-key-here"
-   ```
+Make sure you have Python 3.8+ installed. Install required packages:
 
-5. **Run the application**
-   ```bash
-   python app.py
-   ```
+```
+pip install flask pillow googletrans==4.0.0-rc1 qrcode
+```
 
-6. **Open in browser**
-   Navigate to `http://localhost:5000`
+### 3. Seed the Database and Generate Sample QR Codes
+
+Run the following script to populate the database and generate QR codes:
+
+```
+python seed_sample_meds_and_qr.py
+```
+
+This will:
+- Add 10 sample medicines to `medicines.db`
+- Generate 10 QR code images in `static/sample_qr/`
+
+### 4. Run the Application
+
+```
+python app.py
+```
+
+The app will be available at `http://localhost:5000/` by default.
 
 ## System Dependencies 🔧
 
@@ -70,22 +68,24 @@ brew install zbar
 
 **Note:** The application gracefully handles missing QR scanning dependencies with appropriate fallback messages.
 
-## Usage Guide 📖
 
-### Getting Started
-1. **Sign Up** - Create a new account or log in with existing credentials
-2. **Search Medicines** - Use the search function to find medicine information by name
-3. **Scan Barcodes** - Upload images containing barcodes/QR codes for instant medicine lookup
-4. **View History** - Check your search history anytime
-5. **Admin Functions** - Add new medicines to the database (admin panel)
+## Usage
 
-### Sample Data
-The application comes with sample medicine data:
-- **Paracetamol** (Barcode: 123456789)
-- **Ibuprofen** (Barcode: 987654321)
-- **Aspirin** (Barcode: 555666777)
-- **Amoxicillin** (Barcode: 111222333)
-- **Omeprazole** (Barcode: 444555666)
+- **Signup/Login**: Create a user account or log in.
+- **Search Medicine**: Use the search page to find medicines by name.
+- **Scan QR/Barcode**: Go to the scan page, upload a QR code image (e.g., from `static/sample_qr/QR0001.png`), and view the medicine details.
+- **History**: View your search and scan history.
+- **Admin Panel**: Add new medicines (requires manual navigation).
+
+### Sample Data & QR Codes
+
+The app comes with 10 sample medicines and QR codes. Example:
+
+- **Paracetamol** (Barcode: QR0001, QR image: `static/sample_qr/QR0001.png`)
+- **Ibuprofen** (Barcode: QR0002, QR image: `static/sample_qr/QR0002.png`)
+- ...
+
+Upload any of these QR images on the scan page to test the workflow.
 
 ## Configuration ⚙️
 
@@ -93,10 +93,11 @@ The application comes with sample medicine data:
 - `SESSION_SECRET` - Secret key for Flask sessions (required for production)
 - `PORT` - Port number for the application (default: 5000)
 
+
 ### Database
 - Uses SQLite database (`medicines.db`)
 - Automatically creates tables on first run
-- Run `python seed_database.py` to populate with sample data
+- Run `python seed_sample_meds_and_qr.py` to populate with sample data and QR codes
 
 ## Architecture 🏗️
 
@@ -119,26 +120,29 @@ The application comes with sample medicine data:
 
 ## Development 👩‍💻
 
-### Project Structure
+
+### Folder Structure
 ```
 DrugLensFlask/
-├── app.py                 # Main Flask application
-├── seed_database.py       # Database seeding script
-├── templates/             # HTML templates
+├── app.py                  # Main Flask application
+├── generate_san_qr.py      # (Optional) QR code generation script
+├── seed_database.py        # (Optional) Database seeding script
+├── seed_sample_meds_and_qr.py # Script to seed sample medicines and QR codes
+├── medicines.db            # SQLite database
+├── static/
+│   ├── css/
+│   │   └── style.css       # Custom styles
+│   └── sample_qr/          # Generated sample QR codes
+├── templates/
 │   ├── home.html
 │   ├── login.html
 │   ├── signup.html
 │   ├── medicine.html
+│   ├── scan.html
 │   ├── history.html
-│   ├── admin.html
-│   └── scan.html
-├── static/
-│   └── css/
-│       └── style.css      # Custom styling
-├── pyproject.toml         # Python dependencies
-├── uv.lock               # Dependency lock file
-├── .gitignore            # Git ignore rules
-└── README.md             # This file
+│   └── admin.html
+├── README.md               # Project documentation
+└── ...
 ```
 
 ### Database Schema
@@ -164,10 +168,11 @@ For production deployment:
 4. Test thoroughly
 5. Submit a pull request
 
-## License 📄
 
-This project is open source and available under the MIT License.
+## License
 
-## Support 💬
+This project is for educational/demo purposes.
 
-For issues and questions, please create an issue on the GitHub repository.
+---
+
+For questions or contributions, please open an issue or pull request.

@@ -64,15 +64,20 @@
                 {% endif %}
 
                 {% elif request.method == 'POST' %}
-                {% if error_message %}
-                <div class="alert alert-warning mt-3">
-                    {{ error_message }}
-                </div>
-                {% else %}
-                <div class="alert alert-warning mt-3">
-                    No barcode/QR code found in the image or medicine not found in database.
-                </div>
-                {% endif %}
+                    {% if error_message %}
+                        <div class="alert alert-warning mt-3">
+                            {{ error_message }}
+                        </div>
+                    {% elif scanned_code %}
+                        <div class="alert alert-info mt-3">
+                            <strong>Scanned Barcode/QR Code:</strong> {{ scanned_code }}<br>
+                            Medicine not found in database for this code.
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning mt-3">
+                            No barcode/QR code found in the image or medicine not found in database.
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

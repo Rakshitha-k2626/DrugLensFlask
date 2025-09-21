@@ -49,38 +49,16 @@ def seed_medicines():
     conn = sqlite3.connect("medicines.db")
     c = conn.cursor()
     
-    # Sample medicines data
-    medicines = [
-        ('Paracetamol', '123456789', 
-         'Pain reliever and fever reducer. Commonly used for headaches, muscle aches, and reducing fever.',
-         '500mg every 6 hours, maximum 4 doses per day',
-         'Nausea, dizziness, skin rash (rare)',
-         'May interact with warfarin, alcohol. Avoid overdose as it can cause liver damage.'),
-        
-        ('Ibuprofen', '987654321',
-         'Anti-inflammatory pain reliever. Effective for pain, inflammation, and fever reduction.',
-         '400mg every 8 hours with food, maximum 1200mg per day',
-         'Stomach upset, heartburn, dizziness, headache',
-         'May interact with blood thinners, ACE inhibitors. Not recommended with kidney disease.'),
-        
-        ('Aspirin', '555666777',
-         'Pain reliever, anti-inflammatory, and blood thinner. Used for pain relief and heart attack prevention.',
-         '325mg every 4-6 hours for pain, 81mg daily for heart protection',
-         'Stomach irritation, increased bleeding risk, ringing in ears',
-         'Avoid with other blood thinners, not for children under 16 due to Reye syndrome risk.'),
-        
-        ('Amoxicillin', '111222333',
-         'Antibiotic used to treat bacterial infections including respiratory, ear, and urinary tract infections.',
-         '500mg every 8 hours for 7-10 days',
-         'Nausea, diarrhea, skin rash, allergic reactions',
-         'May interact with birth control pills, blood thinners. Complete full course even if feeling better.'),
-        
-        ('Omeprazole', '444555666',
-         'Proton pump inhibitor that reduces stomach acid production. Used for heartburn and ulcers.',
-         '20mg once daily before breakfast',
-         'Headache, nausea, diarrhea, stomach pain',
-         'May interact with clopidogrel, digoxin. Long-term use may affect vitamin B12 absorption.')
-    ]
+    # Generate 1000 sample medicines
+    medicines = []
+    for i in range(1, 1001):
+        name = f"SampleMed{i}"
+        barcode = f"{100000000 + i}"
+        description = f"Sample medicine {i} for testing purposes."
+        dosage = f"{i % 500 + 1}mg every {i % 12 + 1} hours"
+        side_effects = f"Side effect {i % 10 + 1}, Side effect {i % 5 + 1}"
+        interactions = f"Interaction {i % 7 + 1}, Interaction {i % 3 + 1}"
+        medicines.append((name, barcode, description, dosage, side_effects, interactions))
     
     # Insert medicines if they don't already exist
     for medicine in medicines:
